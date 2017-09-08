@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['724554db.ngrok.io', 'localhost', '0.0.0.0/0, ::/0']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 

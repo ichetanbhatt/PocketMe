@@ -12,13 +12,14 @@ from django.conf import settings
 SLACK_TOKEN = settings.SLACK_TOKEN
 POCKET_API_KEY = settings.POCKET_CONSUMER_KEY
 
-
 # FireBase Configs
 cred = credentials.Certificate('slackreads-firebase-adminsdk-xnduc-2082689e0f.json')
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://slackreads.firebaseio.com'
 })
 ref = db.reference('')
+cache_ref = db.reference('/cache')
+
 
 
 # Slack Functions
@@ -85,62 +86,96 @@ def btn_response(request):
         return JsonResponse(data, status=200)
 
 
+# First Time Required for Slack Event to verify
+def hit(request):
+    if request.method == 'POST':
+        # Required for Setting up App First for Slack
+        response = ast.literal_eval(request.body)
+        data = {
+            'challenge': response.get('challenge'),
+        }
+        return JsonResponse(data, status=200)
+
+
 # Returns on every Reaction Event
 def event(request):
     if request.method == 'POST':
-        # Required for Setting up App First for Slack
-        # challenge = request.body.get('challenge')
-        # data = {
-        #     'challenge': response.get('challenge'),
-        # }
-
         response = ast.literal_eval(request.body)
+        # print response
         # Check if reaction is spiral_note
         team = response.get('team_id')
         user = response.get('event').get('user')
         ts = response.get('event').get('item').get('ts')
         channel = response.get('event').get('item').get('channel')
         emo_reaction = response.get('event').get('reaction')
+        split_ts = ts.split('.')
+        new_ts = split_ts[0] + "" + split_ts[1]
         # Check If reaction is 'spiral_note_pad'
         if emo_reaction == 'spiral_note_pad':
             # Check if user is registered
             db_ref = (ref.child(team).child(user)).get()
             if type(db_ref) is dict:
                 code = db_ref.get('code')
-                print ("You are registered")
+                print ("User is Registered")
                 # Check for URL in message
                 url = "https://slack.com/api/channels.history?token={slack_token}&channel={channel}" \
                       "&latest={latest}&inclusive=true&count=1".format(
-                        slack_token= SLACK_TOKEN,
-                        channel=channel, latest=ts)
+                    slack_token=SLACK_TOKEN,
+                    channel=channel, latest=ts)
                 h_response = requests.get(url)
                 text = json.loads(h_response.content)
                 message = text.get('messages')[0].get('text')
                 message = message[1:-1]
-                save(team, user, message)
-                print response
-                return HttpResponse(status=200)  # send status 200 asap
+                print message
+                # Save message link in cache
+                query = team+"_"+user+"_"+new_ts
+                cache_check = cache_ref.get().get(query)
+                if type(cache_check) is dict:
+                    print ("Added")
+                    return HttpResponse(status=200)
+                else:
+                    print (2)
+                    # check = cache_ref.get().get(query).get('added')
+                    cache_ref.child(query).set({
+                        'added': False,
+                    })
+                    save(team, user, message, query)
             else:
-                print ('You are out of Scope')
+                print ('Unregistered User')
                 return HttpResponse(status=200)
+        return HttpResponse("Text")
     return HttpResponse(status=200)
+
+
+# DB Test View
+def db(request):
+    id = "123455"
+    test = cache_ref.get().get('yz')
+    print type(test),test
+    # test.set(
+    #     {
+    #         "link": "Test",
+    #     }
+    # )
+    return HttpResponse("yo")
 
 
 # Pocket Functions
-
-def save(team, user, message):
-    db_ref = (ref.child(team).child(user)).get()
-    token = db_ref.get('p_token')
-    print token
-    add_url = 'https://getpocket.com/v3/add'
-    add_data = {
-        'url': message,
-        'consumer_key': POCKET_API_KEY,
-        'access_token': token
-    }
-    save_post = requests.post(add_url, add_data)
-    print ('****Added****')
-    return HttpResponse(status=200)
+def save(team, user, message, query):
+        db_ref = (ref.child(team).child(user)).get()
+        token = db_ref.get('p_token')
+        add_url = 'https://getpocket.com/v3/add'
+        add_data = {
+            'url': message,
+            'consumer_key': POCKET_API_KEY,
+            'access_token': token
+        }
+        cache_ref.child(query).update({
+            'added': True,
+        })
+        save_post = requests.post(add_url, add_data)
+        print ('****Added****')
+        return HttpResponse(status=200)
 
 
 # First Time when someone hits /auth, Auth process is started and code is generated and user is redirected to URI
@@ -165,7 +200,7 @@ def auth(request):
     team_ref.set({
         'code': code,
     })
-    new_redirect_uri = 'http://724554db.ngrok.io/redirect?id=' + u_id + '.' + t_id
+    new_redirect_uri = 'http://724554db.ngrok.io/redirect?id=' + u_id + '.' + t_id  # Enter the Redirect URI
     # Redirect required for token generation
     auth_url = "https://getpocket.com/auth/authorize?request_token={code}&redirect_uri={new_redirect_uri}".format(
         code=code, new_redirect_uri=new_redirect_uri)
@@ -203,18 +238,6 @@ def auth_redirect(request):
 
 def index(request):
     if request.method == 'GET':
-        code = request.GET.get('code')
-        url = 'https://getpocket.com/v3/oauth/authorize'
-        data = {
-            'consumer_key': POCKET_API_KEY,
-            'code': code
-        }
         return HttpResponse("<h1>Welcome To Slack Reads </h1>")
 
 
-def db(request):
-    test = ref.child('T6V385YJD').child('U6UV5QHBJ').get()
-    # test = test.get('code')
-    # test1 = test.get('code')
-    print type(test)
-    return HttpResponse("yo")
