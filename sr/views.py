@@ -125,13 +125,15 @@ def event(request):
                 h_response = requests.get(url)
                 text = json.loads(h_response.content)
                 message = text.get('messages')[0].get('text')
-                message = message[1:-1]
-                print message
+                start = message.index("<")+1
+                end = message.index(">")
+                link = message[start:end]
+                print link
                 # Save message link in cache
                 query = team+"_"+user+"_"+new_ts
                 cache_check = cache_ref.get().get(query)
                 if type(cache_check) is dict:
-                    print ("Added")
+                    print ("Already Added")
                     return HttpResponse(status=200)
                 else:
                     print (2)
@@ -139,7 +141,7 @@ def event(request):
                     cache_ref.child(query).set({
                         'added': False,
                     })
-                    save(team, user, message, query)
+                    save(team, user, link, query)
             else:
                 print ('Unregistered User')
                 return HttpResponse(status=200)
@@ -173,8 +175,8 @@ def save(team, user, message, query):
         cache_ref.child(query).update({
             'added': True,
         })
-        save_post = requests.post(add_url, add_data)
-        print ('****Added****')
+        requests.post(add_url, add_data)
+        print ('Successfully added to pocket')
         return HttpResponse(status=200)
 
 
