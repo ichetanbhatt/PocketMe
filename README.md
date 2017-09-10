@@ -11,14 +11,15 @@ Save links shared with you to your Pocket reading list with just a single reacti
 * Clone the repo.
 * Create Slack App and Pocket App.
 * Create '/slack_pocket/local.py' :
-<img src="img/dir.png" width="300"/>
+
 ```
-{
-Slack_Token = 'your_slack_token'
+{ Slack_Token = 'your_slack_token'
 Consumer_Key = 'your_pocket_key'
 Server_Url = 'http://your_server_url'
 }
 ```
+<img src="img/dir.png" width="300"/>
+
 * Setting up Slack App:
 1. Create a Slack App, give desired oAuth permissions and store the API key somewhere safe.
 2. Create a Slash Command and add Request URL: 'yourserver/register'
