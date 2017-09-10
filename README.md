@@ -12,11 +12,10 @@ Save links shared with you to your Pocket reading list with just a single reacti
 * Create Slack App and Pocket App.
 * Create '/slack_pocket/local.py' :
 
-```
-{ Slack_Token = 'your_slack_token'
+```py
+Slack_Token = 'your_slack_token'
 Consumer_Key = 'your_pocket_key'
 Server_Url = 'http://your_server_url'
-}
 ```
 <img src="img/dir.png" width="500"/>
 
@@ -35,7 +34,7 @@ I've used Firebase Realtime DB. For setting it up:
 1. Create an App in Firebase Console.
 2. Download Admin SDK and save it the root of dir.
 3. Change initializing configs:
-```
+```py
 {
 cred = credentials.Certificate('admin_sdk.json')
 firebase_admin.initialize_app(cred, {
