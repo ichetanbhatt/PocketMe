@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.http import HttpResponse, HttpRequest, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
+from django.template import Context, loader
 import ast, json
 import requests
 import firebase_admin
@@ -65,14 +66,12 @@ def slashcmd(request):
 # Button Responses (Currently not working)
 def btn_response(request):
     if request.method == 'POST':
-        print("hoho")
         payload = json.loads(request.POST.get('payload'))
         user_id = payload.get('user').get('id')
         team_id = payload.get('team').get('id')
         print user_id, team_id
         url = SERVER_URL+"/auth?u_id=" + user_id + "&t_id=" + team_id
         # Response to send after button click
-        print ("Hoojoo")
         data = {
             "response_type": "ephemeral",
             "replace_original": True,
@@ -144,7 +143,7 @@ def event(request):
                     print ("Already Added")
                     return HttpResponse(status=200)
                 else:
-                    print (2)
+                    print ("Saving")
                     # check = cache_ref.get().get(query).get('added')
                     cache_ref.child(query).set({
                         'added': False,
@@ -219,7 +218,7 @@ def auth(request):
 
 # Generate Token and Saves into DB
 def auth_redirect(request):
-    print request.GET
+    # print request.GET
     # Fetch t_id and u_id
     ids = request.GET.get('id')
     u_id = (ids.split("."))[0]
@@ -242,8 +241,8 @@ def auth_redirect(request):
     db_ref.update({
         'p_token': token
     })
-    print ('Yuhooooo, \n Token Generated')
-    return HttpResponse('You are Registered, Go on and Save awesomeness from Slack')
+    print ('Yuhoooo, Token Generated Successfully')
+    return HttpResponse("You are now Registered")
 
 
 def index(request):
