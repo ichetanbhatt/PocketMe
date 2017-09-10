@@ -35,12 +35,10 @@ I've used Firebase Realtime DB. For setting it up:
 2. Download Admin SDK and save it the root of dir.
 3. Change initializing configs:
 ```py
-{
 cred = credentials.Certificate('admin_sdk.json')
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://your_app.firebaseio.com'
 })
-}
 ```
 
 ## Usage
@@ -50,7 +48,7 @@ firebase_admin.initialize_app(cred, {
 * You will be given a URL on which you can click and authorize into your Pocket Account
 * Registration done :grin:
 3. Saving links using reaction:
-** :spiral_note_pad:" is the only reaction that is compatible at present. **
+**:spiral_note_pad:" is the only reaction that is compatible at present.**
 
 Just react with :spiral_note_pad: emoticon on the message and it will save the link to your Pocket, if you are registered.
 
