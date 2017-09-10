@@ -52,5 +52,5 @@ firebase_admin.initialize_app(cred, {
 
 Just react with :spiral_note_pad: emoticon on the message and it will save the link to your Pocket, if you are registered.
 
-<img src="img/output_07iD8s.gif" width="700"/>
+<img src="img/Webp.net-gifmaker.gif" width="700"/>
 
