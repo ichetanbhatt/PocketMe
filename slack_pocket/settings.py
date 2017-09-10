@@ -16,6 +16,7 @@ from local import *
 # Production Keys
 SLACK_TOKEN = Slack_Token
 POCKET_CONSUMER_KEY = Consumer_Key
+SERVER_URL = Server_Url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -11,6 +11,7 @@ from django.conf import settings
 # Imp Keys
 SLACK_TOKEN = settings.SLACK_TOKEN
 POCKET_API_KEY = settings.POCKET_CONSUMER_KEY
+SERVER_URL = settings.SERVER_URL
 
 # FireBase Configs
 cred = credentials.Certificate('slackreads-firebase-adminsdk-xnduc-2082689e0f.json')
@@ -26,26 +27,30 @@ cache_ref = db.reference('/cache')
 # Register for app via Slack
 def slashcmd(request):
     if request.method == 'POST':
-        message = request.POST.get('text')
+        user_id = request.POST.get('user_id')
+        team_id = request.POST.get('team_id')
+        url = SERVER_URL+"/auth?u_id=" + user_id + "&t_id=" + team_id
+
+        # message = request.POST.get('text')
         data = {
             "text": "Yo,Seems like you wish to register for awesomeness?",
             "attachments": [
                 {
                     "fallback": "Required plain-text summary of the attachment.",
                     "color": "#a233e1",
-                    "title": "SlackReads",
-                    "title_link": "https://api.slack.com/",
+                    "title": "Register at PocketMe",
+                    "title_link": url,
                     "text": "After accepting it you will receive a link, please use to register yourself.",
                     "callback_id": "register_txt",
-                    "actions": [
-                        {
-                            "name": "register",
-                            "text": "Yes",
-                            "type": "button",
-                            "value": "Yes",
-                            "style": "primary"
-                        },
-                    ],
+                    # "actions": [
+                    #     {
+                    #         "name": "game",
+                    #         "text": "Yes",
+                    #         "type": "button",
+                    #         "value": "Yes",
+                    #         "style": "primary"
+                    #     },
+                    # ],
                     "thumb_url": "http://example.com/path/to/thumb.png",
                     "footer": "SlackReads",
                     "footer_icon": "https://raw.githubusercontent.com/ketanbhatt/block-slack-users/master/icons/icon25"
@@ -57,18 +62,21 @@ def slashcmd(request):
     return JsonResponse(data, status=200)
 
 
-# Button Responses
+# Button Responses (Currently not working)
 def btn_response(request):
     if request.method == 'POST':
+        print("hoho")
         payload = json.loads(request.POST.get('payload'))
         user_id = payload.get('user').get('id')
         team_id = payload.get('team').get('id')
         print user_id, team_id
-        url = "http://724554db.ngrok.io/auth?u_id=" + user_id + "&t_id=" + team_id
+        url = SERVER_URL+"/auth?u_id=" + user_id + "&t_id=" + team_id
         # Response to send after button click
+        print ("Hoojoo")
         data = {
             "response_type": "ephemeral",
             "replace_original": True,
+            "text": "Register Here",
             "attachments": [
                 {
                     "fallback": "Required plain-text summary of the attachment.",
@@ -186,7 +194,7 @@ def auth(request):
     u_id = request.GET.get('u_id')
     t_id = request.GET.get('t_id')
     url = 'https://getpocket.com/v3/oauth/request'
-    redirect_uri = "http://724554db.ngrok.io/redirect"
+    redirect_uri = SERVER_URL+"/redirect"
     data = {
         'consumer_key': POCKET_API_KEY,
         'redirect_uri': redirect_uri
@@ -202,7 +210,7 @@ def auth(request):
     team_ref.set({
         'code': code,
     })
-    new_redirect_uri = 'http://724554db.ngrok.io/redirect?id=' + u_id + '.' + t_id  # Enter the Redirect URI
+    new_redirect_uri = SERVER_URL+'/redirect?id=' + u_id + '.' + t_id  # Enter the Redirect URI
     # Redirect required for token generation
     auth_url = "https://getpocket.com/auth/authorize?request_token={code}&redirect_uri={new_redirect_uri}".format(
         code=code, new_redirect_uri=new_redirect_uri)
