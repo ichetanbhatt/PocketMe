@@ -18,7 +18,7 @@ Consumer_Key = 'your_pocket_key'
 Server_Url = 'http://your_server_url'
 }
 ```
-<img src="img/dir.png" width="300"/>
+<img src="img/dir.png" width="500"/>
 
 * Setting up Slack App:
 1. Create a Slack App, give desired oAuth permissions and store the API key somewhere safe.
@@ -27,7 +27,7 @@ Server_Url = 'http://your_server_url'
 4. For verifying Event URL, change view of '/event' url in your app to 'hit()' and verify. Change back to view 'event()' once verified.
 5. In Event Subscription, Add Workspace Event -> 'reaction_added'
 6. Update app scopes in 'oAuth & Permissions'. Make sure the following listed scopes are authorised:
-<img src="img/oauth.png" width="300"/>
+<img src="img/oauth.png" width="500"/>
 7. Install App to slack.
 
 * Setting up Database
