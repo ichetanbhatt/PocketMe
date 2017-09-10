@@ -11,12 +11,14 @@ Save links shared with you to your Pocket reading list with just a single reacti
 * Clone the repo.
 * Create Slack App and Pocket App.
 * Create '/slack_pocket/local.py' :
-<img src="img/dir.png"/>
-
-{Slack_Token = 'your_slack_token'
+<img src="img/dir.png" width="300"/>
+```python
+{
+Slack_Token = 'your_slack_token'
 Consumer_Key = 'your_pocket_key'
-Server_Url = 'http://your_server_url'}
-
+Server_Url = 'http://your_server_url'
+}
+```
 * Setting up Slack App:
 1. Create a Slack App, give desired oAuth permissions and store the API key somewhere safe.
 2. Create a Slash Command and add Request URL: 'yourserver/register'
@@ -24,7 +26,7 @@ Server_Url = 'http://your_server_url'}
 4. For verifying Event URL, change view of '/event' url in your app to 'hit()' and verify. Change back to view 'event()' once verified.
 5. In Event Subscription, Add Workspace Event -> 'reaction_added'
 6. Update app scopes in 'oAuth & Permissions'. Make sure the following listed scopes are authorised:
-<img src="img/oauth.png" />
+<img src="img/oauth.png" width="300"/>
 7. Install App to slack.
 
 * Setting up Database
@@ -32,13 +34,14 @@ I've used Firebase Realtime DB. For setting it up:
 1. Create an App in Firebase Console.
 2. Download Admin SDK and save it the root of dir.
 3. Change initializing configs:
+```python
 {
 cred = credentials.Certificate('admin_sdk.json')
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://your_app.firebaseio.com'
 })
 }
-
+```
 
 ## Usage
 1. Install PocketMe to your Team.
