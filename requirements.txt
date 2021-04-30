@@ -33,7 +33,7 @@ python-jwt==2.0.1
 pytz==2017.2
 requests==2.18.4
 requests-toolbelt==0.7.0
-rsa==3.4.2
+rsa==4.7
 six==1.10.0
 slackclient==1.0.0
 urllib3==1.22
